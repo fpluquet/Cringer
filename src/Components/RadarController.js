@@ -1,11 +1,13 @@
 import RadarComponent from "./RadarComponent";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 const RadarController = (props) => {
   var {profiles} = props
+
   var profile = profiles[0]
 
   var [currentProfile, setProfile] = useState(profile)
+  var [currentProfiles, setProfiles] = useState(profiles)
   var [userMatches, setUserMatches] = useState([])
 
   var matches = userMatches.filter(p => p.match)
@@ -18,10 +20,11 @@ const RadarController = (props) => {
     setNext()
   }
 
-  function setNext() {
-    profiles = profiles.filter(p => currentProfile !== p)
-    profile = profiles[Math.floor(Math.random() * profiles.length)]
+  async function setNext()  {
+    var newProfiles = currentProfiles.filter(p => currentProfile.id != p.id)
+    profile = newProfiles[Math.floor(Math.random() * newProfiles.length)]
     setProfile(profile)
+    setProfiles(newProfiles)
   }
 
   const onPassClick = () => {
@@ -30,7 +33,13 @@ const RadarController = (props) => {
     })
     setNext();
   }
-
+  if (currentProfiles.length == 0)
+    return (
+      <div>
+        <p>Nombre de matches : {matches.length}</p>
+        <p>No more profiles...</p>
+      </div>
+    );
   return (
     <div>
       <p>Nombre de matches : {matches.length}</p>

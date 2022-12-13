@@ -1,21 +1,21 @@
-import logo from '../logo.svg';
 import './App.css';
-import RadarComponent from "./RadarComponent";
 import RadarController from "./RadarController";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 
 async function loadProfiles() {
   var response = await fetch("http://localhost:3001/api/profiles")
   return await response.json()
 }
-const loadProfilesPromise = loadProfiles()
 function App() {
 
   var [profiles, setProfiles] = useState(undefined)
 
-  loadProfilesPromise.then((data) => {
-    setProfiles(data)
-  })
+  useEffect(() => {
+    loadProfiles().then((data) => {
+      console.log("Chargement des profiles")
+      setProfiles(data)
+    })
+  }, [])
 
   if(profiles == undefined) {
     return (
