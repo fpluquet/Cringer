@@ -12,16 +12,22 @@ const RadarController = (props) => {
 
   const onMatchClick = () => {
     setUserMatches([...userMatches, currentProfile])
+    fetch("http://localhost:3001/api/match/" + currentProfile.id, {
+      "method": "POST"
+    })
     setNext()
   }
 
   function setNext() {
-    profiles = profiles.filter(p => currentProfile != p)
+    profiles = profiles.filter(p => currentProfile !== p)
     profile = profiles[Math.floor(Math.random() * profiles.length)]
     setProfile(profile)
   }
 
   const onPassClick = () => {
+    fetch("http://localhost:3001/api/pass/" + currentProfile.id, {
+      "method": "POST"
+    })
     setNext();
   }
 
