@@ -1,21 +1,17 @@
 import RadarComponent from "./RadarComponent";
 import {useState} from "react";
-import profiles from '../data.json'
 
-profiles = profiles.map((p) => ({
-  name: `${p.name.first}, ${p.name.last}`,
-  description: `Bonjour de ${p.location.country} !`,
-  img: p.picture.large
-}))
 const RadarController = (props) => {
-
+  var {profiles} = props
   var profile = profiles[0]
 
   var [currentProfile, setProfile] = useState(profile)
-  var [matches, setMatches] = useState([])
+  var [userMatches, setUserMatches] = useState([])
+
+  var matches = userMatches.filter(p => p.match)
 
   const onMatchClick = () => {
-    setMatches([...matches, currentProfile])
+    setUserMatches([...userMatches, currentProfile])
     setNext()
   }
 
@@ -29,13 +25,15 @@ const RadarController = (props) => {
     setNext();
   }
 
-
   return (
     <div>
       <p>Nombre de matches : {matches.length}</p>
-      <RadarComponent profile={currentProfile}
-                      onMatchClick={onMatchClick}
-      onPassClick={onPassClick}></RadarComponent>
+      <RadarComponent
+        profile={currentProfile}
+        onMatchClick={onMatchClick}
+        onPassClick={onPassClick}>
+
+      </RadarComponent>
     </div>
   );
 }

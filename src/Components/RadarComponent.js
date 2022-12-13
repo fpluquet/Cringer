@@ -3,10 +3,17 @@ import styles from "./RadarComponent.module.css"
 const RadarComponent = (props) => {
   const { profile } = props
   const { onMatchClick, onPassClick } = props
+
+  var hint = undefined;
+  if(profile.match) {
+    hint = <h3>She matches you !</h3>
+  }
+
   return (
     <div >
       <img src={profile.img} className={styles.radarImg}/>
       <h2>{profile.name}</h2>
+      {hint}
       <div>
         <a className={styles.Button + " " + styles.MatchButton} onClick={onMatchClick}><span>MATCH !</span></a>
         <span className={styles.OrSpan}>or</span>
