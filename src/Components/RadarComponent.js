@@ -5,8 +5,12 @@ const RadarComponent = (props) => {
   const { onMatchClick, onPassClick } = props
 
   var hint = undefined;
-  if(profile.match) {
-    hint = <h3>She matches you !</h3>
+  if(profile.likesMe && profile.liked) {
+    hint = <h3>It's a match !</h3>
+  } else if(profile.likesMe) {
+    hint = <h3>She likes you !</h3>
+  } else if(profile.liked) {
+    hint = <h3>You like her!</h3>
   }
 
   return (
