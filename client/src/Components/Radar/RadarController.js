@@ -2,18 +2,14 @@ import RadarComponent from "./RadarComponent";
 import {useEffect, useState} from "react";
 
 const RadarController = (props) => {
-  var {profiles} = props
+  var {profiles, currentUser, onLogoutClick} = props
 
   var profile = profiles[0]
 
   var [currentProfile, setProfile] = useState(profile)
   var [currentProfiles, setProfiles] = useState(profiles)
-  var [userMatches, setUserMatches] = useState([])
-
-  var matches = userMatches.filter(p => p.match)
 
   const onMatchClick = () => {
-    setUserMatches([...userMatches, currentProfile])
     fetch("http://localhost:3001/api/match/" + currentProfile.id, {
       "method": "POST"
     })
@@ -35,18 +31,18 @@ const RadarController = (props) => {
   }
   if (currentProfiles.length == 0)
     return (
-      <div>
-        <p>Nombre de matches : {matches.length}</p>
+      <div class={"App-body"}>
         <p>No more profiles...</p>
       </div>
     );
   return (
     <div>
-      <p>Nombre de matches : {matches.length}</p>
       <RadarComponent
         profile={currentProfile}
+        currentUser={currentUser}
         onMatchClick={onMatchClick}
-        onPassClick={onPassClick}>
+        onPassClick={onPassClick}
+        onLogoutClick={onLogoutClick}>
 
       </RadarComponent>
     </div>
