@@ -15,6 +15,6 @@ Son sujet est de faire un site web qui permet de matcher des utilisateurs entre 
 
 ## Pour le client
 
-1. Allez dans le dossier racine et lancez la commande `npm install`.
+1. Allez dans le dossier `client` et lancez la commande `npm install`.
 2. Lancez ensuite le script start via un `npm start` pour lancer le client sur le port 3000.
 3. Connectez-vous à l'adresse `localhost:3000` pour accéder au site et le tester.
