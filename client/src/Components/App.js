@@ -12,12 +12,28 @@ function App() {
   var [profiles, setProfiles] = useState(undefined)
   var [currentUser, setCurrentUser] = useState(undefined)
 
+  var [profilesForCurrentUser, setCurrentUserProfiles] = useState(undefined)
+
   useEffect(() => {
     loadProfiles().then((data) => {
       console.log("Chargement des profiles")
       setProfiles(data)
     })
   }, [])
+  useEffect(() => {
+    if(currentUser == null) {
+      setCurrentUserProfiles(undefined)
+      return
+    }
+    fetch("http://localhost:3001/api/otherProfiles", {
+      headers: {
+        "uid": currentUser.id
+      }
+    }).then(response => response.json()).then(data => {
+      setCurrentUserProfiles(data)
+    })
+  }, [currentUser])
+
 
   if(profiles == undefined) {
     return (
@@ -35,10 +51,17 @@ function App() {
             setSelectedUser={(user) => setCurrentUser(user) }></SelectUserComponent>
       </div>);
     }
+    if (profilesForCurrentUser == undefined) {
+      return (
+        <header className="App-body">
+          Chargement des match...
+        </header>
+      )
+    }
     return (
       <div className="App">
           <RadarController
-            profiles={profiles}
+            profiles={profilesForCurrentUser}
             currentUser={currentUser}
             onLogoutClick={() => setCurrentUser(undefined)}></RadarController>
       </div>

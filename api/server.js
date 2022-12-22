@@ -9,14 +9,13 @@ const db = new sqlite3.Database('./data.sqlite', (err) => {
   }
 });
 
-var cors = require("cors")
+const cors = require("cors")
 const app = express()
 
 app.use(cors())
+app.use(express.json())
 
-var hardcodedUserId = 101
-
-var userToJSON = (user) => {
+const userToJSON = (user) => {
   return {
     id: user.id,
     name: user.name,
@@ -27,10 +26,24 @@ var userToJSON = (user) => {
   }
 }
 app.get("/api/profiles", (req, res) => {
+  db.all("SELECT * FROM Users", {}, (err, rows) => {
+    if (err) {
+      res.status(500).send({
+        error: "db error",
+        err
+      });
+      throw err
+    }
+    res.json(rows.map(p => userToJSON(p)))
+  });
+})
+app.get("/api/otherProfiles", (req, res) => {
+  const uid = req.headers.uid
+
   db.all("SELECT *, MyMatches.liked as liked, OtherMatches.liked as likesMe FROM Users " +
     "LEFT JOIN Matches as MyMatches ON Users.id = MyMatches.matched AND MyMatches.matcher = $userId " +
     "LEFT JOIN Matches as OtherMatches ON Users.id = OtherMatches.matcher AND OtherMatches.matched = $userId " +
-    "WHERE Users.id != $userId", {$userId: hardcodedUserId}, (err, rows) => {
+    "WHERE Users.id != $userId", {$userId: uid}, (err, rows) => {
     if(err) {
       res.status(500).send({
         error: "db error",
@@ -58,8 +71,8 @@ async function getMatches(userId) {
   })
 }
 
-function saveLikeAndSendMatches(id, liked, res) {
-  db.run("INSERT OR REPLACE INTO Matches (matcher, matched, liked, date) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [hardcodedUserId, id, liked], async (err) => {
+function saveLikeAndSendMatches(uid, pid, liked, res) {
+  db.run("INSERT OR REPLACE INTO Matches (matcher, matched, liked, date) VALUES (?, ?, ?, CURRENT_TIMESTAMP)", [uid, pid, liked], async (err) => {
     if (err) {
       res.status(500).send({
         error: "db error",
@@ -68,7 +81,7 @@ function saveLikeAndSendMatches(id, liked, res) {
       throw err
     }
     try {
-      res.json(await getMatches(hardcodedUserId))
+      res.json(await getMatches(uid))
     } catch (e) {
       res.status(500).send({
         error: "db error",
@@ -78,14 +91,17 @@ function saveLikeAndSendMatches(id, liked, res) {
   })
 }
 
+
 app.post("/api/match/:id", (req, res) => {
-  var id = req.params.id
-  saveLikeAndSendMatches(id, true, res);
+  const pid = req.params.id
+  const uid = req.body.uid
+  saveLikeAndSendMatches(uid, pid, true, res);
 })
 
 app.post("/api/pass/:id", (req, res) => {
-  var id = req.params.id
-  saveLikeAndSendMatches(id, false, res);
+  const pid = req.params.id
+  const uid = req.body.uid
+  saveLikeAndSendMatches(uid, pid, false, res);
 })
 
 app.listen(3001, () => console.log("Server started..."))

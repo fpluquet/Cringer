@@ -1,5 +1,5 @@
 import RadarComponent from "./RadarComponent";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 const RadarController = (props) => {
   var {profiles, currentUser, onLogoutClick} = props
@@ -11,13 +11,19 @@ const RadarController = (props) => {
 
   const onMatchClick = () => {
     fetch("http://localhost:3001/api/match/" + currentProfile.id, {
-      "method": "POST"
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": JSON.stringify({
+        "uid": currentUser.id
+      })
     })
     setNext()
   }
 
   async function setNext()  {
-    var newProfiles = currentProfiles.filter(p => currentProfile.id != p.id)
+    var newProfiles = currentProfiles.filter(p => currentProfile.id !== p.id)
     profile = newProfiles[Math.floor(Math.random() * newProfiles.length)]
     setProfile(profile)
     setProfiles(newProfiles)
@@ -25,11 +31,17 @@ const RadarController = (props) => {
 
   const onPassClick = () => {
     fetch("http://localhost:3001/api/pass/" + currentProfile.id, {
-      "method": "POST"
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": JSON.stringify({
+        "uid": currentUser.id
+      })
     })
     setNext();
   }
-  if (currentProfiles.length == 0)
+  if (currentProfiles.length === 0)
     return (
       <div class={"App-body"}>
         <p>No more profiles...</p>
